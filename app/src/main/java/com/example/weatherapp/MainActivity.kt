@@ -105,13 +105,21 @@ class MainActivity : AppCompatActivity() {
             val longitude = mLastLocation.longitude
 
             Log.i("current Latitude","$longitude")
-
-            super.onLocationResult(locationResult)
+            getLocationWeatherDetails()
         }
     }
 
     private fun isLocationEnabled(): Boolean{
         val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    }
+
+
+    private fun getLocationWeatherDetails(){
+        if(Constants.isNetworkAvailable(this)){
+            Toast.makeText(this, "You have connected to the internet. Now you can make an internet request.", Toast.LENGTH_SHORT).show()
+        }else{
+            Toast.makeText(this@MainActivity, "You haven't connected with the internet.", Toast.LENGTH_SHORT).show()
+        }
     }
 }
