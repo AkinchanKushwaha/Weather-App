@@ -8,6 +8,7 @@ import android.content.Intent
 import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
@@ -18,15 +19,14 @@ import androidx.appcompat.app.AlertDialog
 import com.example.weatherapp.models.WeatherResponse
 import com.example.weatherapp.network.WeatherService
 import com.google.android.gms.location.*
-import com.google.gson.internal.GsonBuildConfig
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.jar.Manifest
 
 class MainActivity : AppCompatActivity() {
 
@@ -146,8 +146,8 @@ class MainActivity : AppCompatActivity() {
                   if(response!!.isSuccessful){
 
                       hideCustomProgressDialog()
-
-                      val weatherList : WeatherResponse? = response.body()
+                      val weatherList: WeatherResponse = response.body()!!
+                      setupUI(weatherList)
                       Log.i("Response Result ","$weatherList")
                   }else{
                       val rc = response.code()
@@ -183,5 +183,25 @@ class MainActivity : AppCompatActivity() {
         if(mProgressDialog!= null){
             mProgressDialog!!.dismiss()
         }
+    }
+
+    private fun setupUI(weatherList: WeatherResponse?){
+        for(i in weatherList!!.weather.indices){
+            Log.e("Weather NAME",weatherList.weather.toString())
+
+            tv_main.text = weatherList.weather[i].main
+            tv_main_description.text = weatherList.weather[i].description
+            tv_temp.text = weatherList.main.temp.toString() + getUnit(application.resources.configuration.locales.toString() )
+
+
+        }
+    }
+
+    private fun getUnit(value: String): String? {
+        var value = "°C"
+        if( "US" == value || "LR" == value ||  "MM" == value){
+            value = "°F"
+        }
+        return value
     }
 }
